@@ -18,12 +18,12 @@
 
 ### ETAP 1: Konfiguracja i Fundamenty (Setup)
 
-- [ ] **Task 1.1**: Inicjalizacja projektu: `npx create-expo-app FitTrack` (Router-based).
-- [ ] **Task 1.2**: Instalacja zależności:
+- [*] **Task 1.1**: Inicjalizacja projektu: `npx create-expo-app FitTrack` (Router-based).
+- [*] **Task 1.2**: Instalacja zależności:
   - `lucide-react-native` (ikony).
   - `date-fns` (logika kalendarza).
   - `@react-native-async-storage/async-storage` (baza danych).
-- [ ] **Task 1.3**: Konfiguracja struktury plików: stworzenie folderów `/components`, `/constants`, `/hooks`.
+- [*] **Task 1.3**: Konfiguracja struktury plików: stworzenie folderów `/components`, `/constants`, `/hooks`.
 
 ### ETAP 2: Budowa Interfejsu (UI Skeleton)
 
