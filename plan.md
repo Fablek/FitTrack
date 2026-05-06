@@ -28,7 +28,7 @@
 ### ETAP 2: Budowa Interfejsu (UI Skeleton)
 
 - [*] **Task 2.1**: **Header**: Implementacja górnej belki z logo i nazwą.
-- [ ] **Task 2.2**: **Calendar Strip**:
+- [*] **Task 2.2**: **Calendar Strip**:
   - Logika generowania 7 dni tygodnia.
   - Implementacja poziomego paska wyboru daty.
   - Obsługa wizualna wybranego dnia (Active State).

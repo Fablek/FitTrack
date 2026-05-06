@@ -1,108 +1,193 @@
-import { addDays, format, startOfWeek } from "date-fns";
-import { pl } from "date-fns/locale";
-import React, { useEffect, useState } from "react";
 import {
-    ScrollView,
+    addDays,
+    eachDayOfInterval,
+    format,
+    isSameDay,
+    startOfWeek,
+    subDays,
+} from "date-fns";
+import { pl } from "date-fns/locale";
+import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+    FlatList,
+    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
 } from "react-native";
 
-export default function CalendarStrip({
-  onDateSelect,
-}: {
+interface Props {
   onDateSelect: (date: Date) => void;
-}) {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [weekDays, setWeekDays] = useState<Date[]>([]);
+  selectedDate: Date;
+}
 
-  useEffect(() => {
-    const start = startOfWeek(new Date(), { weekStartsOn: 1 });
-    const days = [];
+const MAX_WIDTH = 1000;
 
-    for (let i = 0; i < 7; i++) {
-      days.push(addDays(start, i));
-    }
+export default function CalendarStrip({ onDateSelect, selectedDate }: Props) {
+  const [containerWidth, setContainerWidth] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
 
-    setWeekDays(days);
+  const dates = useMemo(() => {
+    const start = subDays(startOfWeek(new Date(), { weekStartsOn: 1 }), 364);
+    const end = addDays(new Date(), 365);
+    return eachDayOfInterval({ start, end });
   }, []);
 
-  const handleDatePress = (date: Date) => {
-    setSelectedDate(date);
-    onDateSelect(date);
+  const itemWidth = containerWidth > 0 ? Math.floor(containerWidth / 7) : 0;
+  const snapInterval = itemWidth * 7;
+
+  useEffect(() => {
+    if (containerWidth > 0) {
+      const todayIndex = dates.findIndex((date) => isSameDay(date, new Date()));
+      if (todayIndex !== -1) {
+        setTimeout(() => {
+          const weekStartIndex = Math.floor(todayIndex / 7) * 7;
+          flatListRef.current?.scrollToIndex({
+            index: weekStartIndex,
+            animated: false,
+          });
+        }, 100);
+      }
+    }
+  }, [containerWidth]);
+
+  const scrollWeeks = (direction: number) => {
+    if (flatListRef.current && containerWidth > 0) {
+      flatListRef.current.scrollToIndex({
+        index:
+          (Math.floor(dates.findIndex((d) => isSameDay(d, selectedDate)) / 7) +
+            direction) *
+          7,
+        animated: true,
+      });
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {weekDays.map((day, index) => {
-          const isSelected =
-            format(day, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
+    <View style={styles.outerContainer}>
+      <View style={styles.navigationWrapper}>
+        {Platform.OS === "web" && (
+          <TouchableOpacity
+            onPress={() => scrollWeeks(-1)}
+            style={styles.navButton}
+          >
+            <ChevronLeft size={24} color="#2e7d32" />
+          </TouchableOpacity>
+        )}
 
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[styles.dayCard, isSelected && styles.selectedDayCard]}
-              onPress={() => handleDatePress(day)}
-            >
-              <Text style={[styles.dayName, isSelected && styles.selectedText]}>
-                {format(day, "EEE", { locale: pl }).toUpperCase()}
-              </Text>
-              <Text
-                style={[styles.dayNumber, isSelected && styles.selectedText]}
-              >
-                {format(day, "d")}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+        <View
+          style={styles.innerContainer}
+          onLayout={(e) => {
+            const w = e.nativeEvent.layout.width;
+            if (Math.abs(containerWidth - w) > 1) setContainerWidth(w);
+          }}
+        >
+          {containerWidth > 0 && (
+            <FlatList
+              ref={flatListRef}
+              data={dates}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.toISOString()}
+              snapToInterval={snapInterval}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              disableIntervalMomentum={true}
+              scrollEventThrottle={16}
+              getItemLayout={(_, index) => ({
+                length: itemWidth,
+                offset: itemWidth * index,
+                index,
+              })}
+              renderItem={({ item }) => {
+                const isSelected = isSameDay(item, selectedDate);
+                const isToday = isSameDay(item, new Date());
+
+                return (
+                  <TouchableOpacity
+                    style={[styles.dayCard, { width: itemWidth }]}
+                    onPress={() => onDateSelect(item)}
+                  >
+                    <Text style={[styles.dayName, isToday && styles.todayText]}>
+                      {format(item, "EEE", { locale: pl }).toUpperCase()}
+                    </Text>
+                    <View
+                      style={[
+                        styles.circle,
+                        isSelected && styles.selectedCircle,
+                        isToday && !isSelected && styles.todayCircle,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.dayNumber,
+                          isSelected && styles.selectedNum,
+                          isToday && !isSelected && styles.todayNum,
+                        ]}
+                      >
+                        {format(item, "d")}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+          )}
+        </View>
+
+        {Platform.OS === "web" && (
+          <TouchableOpacity
+            onPress={() => scrollWeeks(1)}
+            style={styles.navButton}
+          >
+            <ChevronRight size={24} color="#2e7d32" />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
+    width: "100%",
     backgroundColor: "#FFFFFF",
-    paddingVertical: 12,
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: "#F0F0F0",
   },
-  scrollContainer: {
-    paddingHorizontal: 16,
-    gap: 8,
+  navigationWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    maxWidth: MAX_WIDTH + 120,
+    justifyContent: "center",
   },
-  dayCard: {
-    width: 52,
-    height: 68,
-    borderRadius: 12,
-    backgroundColor: "#F8F9FA",
+  innerContainer: {
+    width: "100%",
+    maxWidth: MAX_WIDTH,
+    paddingVertical: 10,
+    overflow: "hidden",
+  },
+  navButton: {
+    padding: 15,
+    zIndex: 20,
+  } as any,
+  dayCard: { alignItems: "center", justifyContent: "center", height: 75 },
+  dayName: { fontSize: 10, color: "#999", fontWeight: "700", marginBottom: 4 },
+  circle: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#E9ECEF",
   },
-  selectedDayCard: {
-    backgroundColor: "#2e7d32",
-    borderColor: "#2e7d32",
-  },
-  dayName: {
-    fontSize: 11,
-    color: "#6C757D",
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  dayNumber: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#212529",
-  },
-  selectedText: {
-    color: "#FFFFFF",
-  },
+  selectedCircle: { backgroundColor: "#2e7d32" },
+  todayCircle: { borderWidth: 1, borderColor: "#2e7d32" },
+  dayNumber: { fontSize: 16, fontWeight: "bold", color: "#333" },
+  selectedNum: { color: "#FFFFFF" },
+  todayNum: { color: "#2e7d32" },
+  todayText: { color: "#2e7d32" },
 });
