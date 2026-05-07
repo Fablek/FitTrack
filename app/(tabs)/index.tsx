@@ -1,15 +1,12 @@
 import CalendarStrip from "@/components/CalendarStrip";
 import Header from "@/components/Header";
 import MealCard from "@/components/MealCard";
+import SummaryFooter from "@/components/SummaryFooter";
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-
-  const handleAddProduct = (mealName: string) => {
-    console.log(`Otwieram wyszukiwarkę dla: ${mealName}`);
-  };
 
   return (
     <View style={styles.container}>
@@ -21,22 +18,16 @@ export default function HomeScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollPadding}
+        contentContainerStyle={styles.scrollContent}
       >
-        <MealCard
-          title="Śniadanie"
-          onAdd={() => handleAddProduct("Śniadanie")}
-        />
-        <MealCard title="Lunch" onAdd={() => handleAddProduct("Lunch")} />
-        <MealCard title="Obiad" onAdd={() => handleAddProduct("Obiad")} />
-        <MealCard
-          title="Podwieczorek"
-          onAdd={() => handleAddProduct("Podwieczorek")}
-        />
-        <MealCard title="Kolacja" onAdd={() => handleAddProduct("Kolacja")} />
-
-        <View style={{ height: 40 }} />
+        <MealCard title="Śniadanie" onAdd={() => {}} />
+        <MealCard title="Lunch" onAdd={() => {}} />
+        <MealCard title="Obiad" onAdd={() => {}} />
+        <MealCard title="Podwieczorek" onAdd={() => {}} />
+        <MealCard title="Kolacja" onAdd={() => {}} />
       </ScrollView>
+
+      <SummaryFooter kcal={0} protein={0} fat={0} carbs={0} goal={2500} />
     </View>
   );
 }
@@ -46,7 +37,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F9FA",
   },
-  scrollPadding: {
-    paddingBottom: 20,
+  scrollContent: {
+    paddingBottom: 120,
   },
 });
