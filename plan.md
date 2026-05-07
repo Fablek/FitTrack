@@ -36,7 +36,7 @@
   - Stworzenie komponentu `MealCard`.
   - Wyświetlenie stałych 5 kategorii posiłków.
   - Dodanie przycisków "Dodaj (+)".
-- [ ] **Task 2.4**: **Summary Footer**:
+- [*] **Task 2.4**: **Summary Footer**:
   - Budowa paska sumarycznego przyklejonego do dołu ekranu.
   - Layout dla 4 wskaźników (Kcal, B, T, W).
 
