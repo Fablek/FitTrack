@@ -32,7 +32,7 @@
   - Logika generowania 7 dni tygodnia.
   - Implementacja poziomego paska wyboru daty.
   - Obsługa wizualna wybranego dnia (Active State).
-- [ ] **Task 2.3**: **Meal Sections**:
+- [*] **Task 2.3**: **Meal Sections**:
   - Stworzenie komponentu `MealCard`.
   - Wyświetlenie stałych 5 kategorii posiłków.
   - Dodanie przycisków "Dodaj (+)".
