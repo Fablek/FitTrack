@@ -42,13 +42,13 @@
 
 ### ETAP 3: Logika Danych i Stanu (Logic)
 
-- [ ] **Task 3.1**: **Model Danych**: Definicja typu `Product` i struktury `DailyLog` (klucz = data).
-- [ ] **Task 3.2**: **Formularz Dodawania**:
+- [*] **Task 3.1**: **Model Danych**: Definicja typu `Product` i struktury `DailyLog` (klucz = data).
+- [*] **Task 3.2**: **Formularz Dodawania**:
   - Ekran/Modal `AddProduct`.
   - Walidacja pól numerycznych.
   - Przekazywanie danych do globalnego stanu.
-- [ ] **Task 3.3**: **Obliczenia**: Funkcja sumująca makroskładniki dla aktywnej daty.
-- [ ] **Task 3.4**: **Nawigacja**: Obsługa przejść między widokiem głównym a formularzem.
+- [*] **Task 3.3**: **Obliczenia**: Funkcja sumująca makroskładniki dla aktywnej daty.
+- [*] **Task 3.4**: **Nawigacja**: Obsługa przejść między widokiem głównym a formularzem.
 
 ### ETAP 4: Pamięć Trwała (Persistence)
 

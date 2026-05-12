@@ -1,22 +1,24 @@
 import { Plus } from "lucide-react-native";
 import React from "react";
+import type { Product } from "@/types";
 import {
-    Platform,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface Props {
   title: string;
   kcal?: number;
+  products?: Product[];
   onAdd: () => void;
 }
 
 const MAX_WIDTH = 1000;
 
-export default function MealCard({ title, kcal = 0, onAdd }: Props) {
+export default function MealCard({ title, kcal = 0, products = [], onAdd }: Props) {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
@@ -35,12 +37,27 @@ export default function MealCard({ title, kcal = 0, onAdd }: Props) {
           </TouchableOpacity>
         </View>
 
-        {/* Miejsce na produkty - na razie placeholder */}
-        <View style={styles.content}>
-          <Text style={styles.placeholderText}>
-            Kliknij +, aby dodać produkt
-          </Text>
-        </View>
+        {products.length > 0 ? (
+          <View style={styles.productList}>
+            {products.map((product) => (
+              <View key={product.id} style={styles.productItem}>
+                <View style={styles.productInfo}>
+                  <Text style={styles.productName}>{product.name}</Text>
+                  <Text style={styles.productMacros}>
+                    {product.kcal} kcal · B {product.protein}g · T {product.fat}g
+                    · W {product.carbs}g
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.content}>
+            <Text style={styles.placeholderText}>
+              Kliknij +, aby dodać produkt
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -107,5 +124,33 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#CCCCCC",
     fontStyle: "italic",
+  },
+  productList: {
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: "#F5F5F5",
+  },
+  productItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 6,
+  },
+  productInfo: {
+    flex: 1,
+  },
+  productName: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#333",
+  },
+  productMacros: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 2,
+  },
+  deleteButton: {
+    padding: 6,
   },
 });
