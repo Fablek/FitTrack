@@ -58,6 +58,6 @@
 
 ### ETAP 5: Szlify i Dokumentacja (Polish & Docs)
 
-- [ ] **Task 5.1**: **Stylizacja (UX)**: Dopracowanie kolorystyki zgodnej z brandingiem FitTrack.
-- [ ] **Task 5.2**: **Testy**: Sprawdzenie działania na iOS/Android (Expo Go) oraz Web.
-- [ ] **Task 5.3**: **Dokumentacja**: Przygotowanie prezentacji (zrzuty ekranu, analiza zalet/wad środowiska).
+- [*] **Task 5.1**: **Stylizacja (UX)**: Dopracowanie kolorystyki zgodnej z brandingiem FitTrack.
+- [*] **Task 5.2**: **Testy**: Sprawdzenie działania na iOS/Android (Expo Go) oraz Web.
+- [*] **Task 5.3**: **Dokumentacja**: Przygotowanie prezentacji (zrzuty ekranu, analiza zalet/wad środowiska).

@@ -1,50 +1,135 @@
-# Welcome to your Expo app 👋
+# FitTrack
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform diet tracking application built with **React Native (Expo)**. FitTrack allows users to log daily meals, track macronutrients (calories, protein, fat, carbs), and review nutritional summaries per day.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Daily diary** with 5 fixed meal categories: Breakfast, Lunch, Dinner, Afternoon Snack, Supper
+- **Horizontal calendar strip** for quick date navigation
+- **Product management** — add and remove food items with name and full macro breakdown
+- **Automatic daily summary** — real-time calculation of total kcal, protein, fat, and carbs
+- **Persistent storage** — all data saved locally via AsyncStorage, survives app restarts
+- **Cross-platform** — runs on iOS, Android, and Web
 
-   ```bash
-   npm install
-   ```
+## Tech Stack
 
-2. Start the app
+| Layer            | Technology                                  |
+| ---------------- | ------------------------------------------- |
+| Framework        | React Native 0.81 (Expo SDK 54)             |
+| Routing          | Expo Router (file-based routing)            |
+| Language         | TypeScript 5.9                              |
+| State Management | React Context                               |
+| Storage          | @react-native-async-storage/async-storage   |
+| Date Utilities   | date-fns                                    |
+| Icons            | lucide-react-native                         |
+| Linting          | ESLint (eslint-config-expo)                 |
 
-   ```bash
-   npx expo start
-   ```
+## Getting Started
 
-In the output, you'll find options to open the app in a
+### Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- Node.js 18+
+- npm
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Installation
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Run
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+| Command           | Description              |
+| ----------------- | ------------------------ |
+| `npm start`       | Start Expo dev server    |
+| `npm run ios`     | Open in iOS simulator    |
+| `npm run android` | Open in Android emulator |
+| `npm run web`     | Open in browser          |
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Lint
 
-## Join the community
+```bash
+npm run lint
+```
 
-Join our community of developers creating universal apps.
+### Type Check
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npx tsc --noEmit
+```
+
+## Project Structure
+
+```
+FitTrack/
+├── app/
+│   ├── _layout.tsx            # Root layout (SafeAreaProvider, MealProvider, Stack navigator)
+│   ├── add-product.tsx        # Modal screen — form for adding a product to a meal
+│   └── (tabs)/
+│       ├── _layout.tsx        # Tab navigator (bottom tab bar)
+│       └── index.tsx          # Main diary screen
+├── components/
+│   ├── CalendarStrip.tsx      # Horizontal scrollable week calendar
+│   ├── Header.tsx             # App bar with logo and current month label
+│   ├── MealCard.tsx           # Single meal section (title, kcal, product list, add/delete)
+│   └── SummaryFooter.tsx      # Sticky bottom bar with daily macro totals and remaining kcal
+├── context/
+│   └── MealContext.tsx         # Global state provider (mealLogs, addProduct, removeProduct, AsyncStorage sync)
+├── types/
+│   └── index.ts               # Product, DailyLog, MealLogs, MealType type definitions
+├── utils/
+│   └── calculations.ts        # getDailySummary, getProductsForMeal, getMealKcal helpers
+└── constants/
+    └── theme.ts               # Color and font tokens
+```
+
+## Architecture
+
+### Data Model
+
+```
+MealLogs                    Record<string, DailyLog>
+  └── DailyLog              Record<MealType, Product[]>
+       └── Product          { id, name, kcal, protein, fat, carbs }
+```
+
+Each day is keyed by ISO date string (`yyyy-MM-dd`). A `DailyLog` contains arrays of `Product` entries for each of the five meal types.
+
+### State Flow
+
+```
+AddProduct screen  ──addProduct()──▶  MealContext (React Context + useState)
+                                                  │
+                                          useEffect (save)
+                                                  ▼
+                                           AsyncStorage
+                                                  │
+                                          useEffect (load)
+                                                  ▼
+HomeScreen  ◀──useMealContext()────────  MealContext
+  ├── MealCard        → getProductsForMeal()
+  ├── MealCard        → getMealKcal()
+  └── SummaryFooter   → getDailySummary()
+```
+
+- **Write path**: Adding/removing a product updates `useState` in `MealProvider`. A `useEffect` persists the entire `mealLogs` object to AsyncStorage on every change.
+- **Read path**: On mount, `MealProvider` loads data from AsyncStorage. An `isLoading` flag gates rendering in the home screen.
+
+### Navigation
+
+The app uses Expo Router with a **Stack + Tabs** layout:
+
+| Screen         | Route            | Type   |
+| -------------- | ---------------- | ------ |
+| Home (Diary)   | `/`              | Tab    |
+| Add Product    | `/add-product`   | Modal  |
+
+The Add Product screen receives `dateKey` and `mealType` as route params and dismisses itself on save.
+
+## License
+
+This project was created as part of a university course assignment.
