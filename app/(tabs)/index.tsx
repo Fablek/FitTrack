@@ -11,12 +11,12 @@ import SummaryFooter from "@/components/SummaryFooter";
 import { format } from "date-fns";
 import { MEAL_TYPES, type MealType } from "@/types";
 import { useRouter } from "expo-router";
-import React, { useMemo, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { mealLogs } = useMealContext();
+  const { mealLogs, isLoading, removeProduct } = useMealContext();
   const router = useRouter();
 
   const dateKey = format(selectedDate, "yyyy-MM-dd");
@@ -32,6 +32,21 @@ export default function HomeScreen() {
       params: { dateKey, mealType },
     });
   };
+
+  const handleRemove = useCallback(
+    (mealType: MealType, productId: string) => {
+      removeProduct(dateKey, mealType, productId);
+    },
+    [dateKey, removeProduct]
+  );
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2e7d32" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -56,6 +71,7 @@ export default function HomeScreen() {
               kcal={kcal}
               products={products}
               onAdd={() => handleAdd(mealType)}
+              onRemoveProduct={(productId) => handleRemove(mealType, productId)}
             />
           );
         })}
@@ -76,6 +92,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: "#F8F9FA",
+    justifyContent: "center",
+    alignItems: "center",
   },
   scrollContent: {
     paddingBottom: 120,

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react-native";
+import { Plus, X } from "lucide-react-native";
 import React from "react";
 import type { Product } from "@/types";
 import {
@@ -14,11 +14,18 @@ interface Props {
   kcal?: number;
   products?: Product[];
   onAdd: () => void;
+  onRemoveProduct?: (productId: string) => void;
 }
 
 const MAX_WIDTH = 1000;
 
-export default function MealCard({ title, kcal = 0, products = [], onAdd }: Props) {
+export default function MealCard({
+  title,
+  kcal = 0,
+  products = [],
+  onAdd,
+  onRemoveProduct,
+}: Props) {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
@@ -48,6 +55,16 @@ export default function MealCard({ title, kcal = 0, products = [], onAdd }: Prop
                     · W {product.carbs}g
                   </Text>
                 </View>
+
+                {onRemoveProduct && (
+                  <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => onRemoveProduct(product.id)}
+                    activeOpacity={0.7}
+                  >
+                    <X color="#d32f2f" size={18} strokeWidth={2} />
+                  </TouchableOpacity>
+                )}
               </View>
             ))}
           </View>
@@ -152,5 +169,6 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     padding: 6,
+    marginLeft: 8,
   },
 });

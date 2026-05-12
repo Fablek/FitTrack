@@ -1,15 +1,30 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  type ReactNode,
+} from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import type { MealLogs, MealType, Product, DailyLog } from "@/types";
 import { MEAL_TYPES } from "@/types";
 
+const STORAGE_KEY = "@fittrack_meal_logs";
+
 interface MealContextType {
   mealLogs: MealLogs;
+  isLoading: boolean;
   addProduct: (
     dateKey: string,
     mealType: MealType,
     product: Omit<Product, "id">
   ) => void;
-  removeProduct: (dateKey: string, mealType: MealType, productId: string) => void;
+  removeProduct: (
+    dateKey: string,
+    mealType: MealType,
+    productId: string
+  ) => void;
 }
 
 const MealContext = createContext<MealContextType | null>(null);
@@ -26,6 +41,27 @@ function createEmptyDailyLog(): DailyLog {
 
 export function MealProvider({ children }: { children: ReactNode }) {
   const [mealLogs, setMealLogs] = useState<MealLogs>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((raw) => {
+        if (raw) {
+          try {
+            setMealLogs(JSON.parse(raw));
+          } catch {
+            setMealLogs({});
+          }
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(mealLogs));
+    }
+  }, [mealLogs, isLoading]);
 
   const addProduct = useCallback(
     (dateKey: string, mealType: MealType, product: Omit<Product, "id">) => {
@@ -68,7 +104,9 @@ export function MealProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <MealContext.Provider value={{ mealLogs, addProduct, removeProduct }}>
+    <MealContext.Provider
+      value={{ mealLogs, isLoading, addProduct, removeProduct }}
+    >
       {children}
     </MealContext.Provider>
   );

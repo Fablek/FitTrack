@@ -52,9 +52,9 @@
 
 ### ETAP 4: Pamięć Trwała (Persistence)
 
-- [ ] **Task 4.1**: **Zapis Lokalny**: Automatyczny zapis stanu do `AsyncStorage` po każdej zmianie.
-- [ ] **Task 4.2**: **Inicjalny Odczyt**: Ładowanie danych z pamięci przy starcie aplikacji (`useEffect`).
-- [ ] **Task 4.3**: **Zarządzanie wpisami**: Dodanie funkcji usuwania konkretnego produktu z listy.
+- [*] **Task 4.1**: **Zapis Lokalny**: Automatyczny zapis stanu do `AsyncStorage` po każdej zmianie.
+- [*] **Task 4.2**: **Inicjalny Odczyt**: Ładowanie danych z pamięci przy starcie aplikacji (`useEffect`).
+- [*] **Task 4.3**: **Zarządzanie wpisami**: Dodanie funkcji usuwania konkretnego produktu z listy.
 
 ### ETAP 5: Szlify i Dokumentacja (Polish & Docs)
 
